@@ -16,7 +16,7 @@ netCDF4 = "^1.6.5"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.10.0"
-ipython = "^8.25.0"
+ipython = "^8.12.3"
 
 [build-system]
 requires = ["poetry-core"]
