@@ -22,7 +22,7 @@ DiskFormat: TypeAlias = Literal['NETCDF3', 'HDF5', 'HDF4',
 DateTimeArr: TypeAlias = npt.NDArray[np.object_]
 """numpy array of datetime.datetime or cftime.datetime"""
 
-Calendar: TypeAlias = Literal[
+CfCalendar: TypeAlias = Literal[
     "standard",
     "gregorian",
     "proleptic_gregorian",
@@ -33,6 +33,7 @@ Calendar: TypeAlias = Literal[
     "all_leap",
     "366_day",
 ]
+"""Calendar names usable by cftime.datetime -- defined in the CF metadata conventions"""
 
 
 default_fillvals: dict[str, int | float]
@@ -559,7 +560,7 @@ def date2index(
         | DateTimeArr
     ),
     nctime: Variable,
-    calendar: Calendar | None = None,
+    calendar: CfCalendar | None = None,
     select: Literal["exact", "before", "after", "nearest"] = "exact",
     has_year_zero: bool | None = None,
 ) -> int | npt.NDArray[np.int_]: ...
@@ -571,14 +572,14 @@ def date2num(
         | DateTimeArr
     ),
     units: str,
-    calendar: Calendar | None = None,
+    calendar: CfCalendar | None = None,
     has_year_zero: bool | None = None,
     longdouble: bool = False,
 ) -> np.number | npt.NDArray[np.number]: ...
 def num2date(
     times: Sequence[int | float | np.number] | npt.NDArray[np.number],
     units: str,
-    calendar: Calendar = "standard",
+    calendar: CfCalendar = "standard",
     only_use_cftime_datetimes: bool = True,
     only_use_python_datetimes: bool = False,
     has_year_zero: bool | None = None,
