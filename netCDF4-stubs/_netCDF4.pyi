@@ -89,8 +89,8 @@ is_native_big: bool
 default_encoding: str
 unicode_error: str
 
-class NetCDF4MissingFeatureException(Exception):
-    def __init__(self, feature: str, version: str): ...
+# class NetCDF4MissingFeatureException(Exception):
+#     def __init__(self, feature: str, version: str): ...
 
 class Dataset:
     @property
