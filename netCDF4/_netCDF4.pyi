@@ -1,8 +1,11 @@
-from typing import TypeAlias, Literal, Optional, Any, Tuple
+from typing import Any, Literal, Optional, Tuple, overload
+import numpy as np
 import numpy.typing as npt
 import os
 import datetime
 import cftime  # type: ignore
+
+from typing_extensions import LiteralString, TypeAlias
 
 Datatype: TypeAlias = Literal['S1', 'c', 'i1', 'b', 'B', 'u1', 'i2',
                               'h', 's', 'u2', 'i4', 'i', 'l', 'u4',
@@ -451,10 +454,70 @@ class MFTime(_Variable):
     ): ...
     def __getitem__(self, elem): ...
 
+@overload
+def stringtoarr(
+    string: str,
+    NUMCHARS: int,
+    dtype: Literal["S"] = ...,
+) -> npt.NDArray[np.bytes_]: ...
+@overload
+def stringtoarr(
+    string: str,
+    NUMCHARS: int,
+    dtype: Literal["U"] = ...,
+) -> npt.NDArray[np.str_]: ...
+@overload
+def stringtoarr(
+    string: str,
+    NUMCHARS: int,
+    dtype: str = ...,
+) -> npt.NDArray[np.str_ | np.bytes_]: ...
+def stringtoarr(
+    string: str,
+    NUMCHARS: int,
+    dtype: str = 'S',
+) -> npt.NDArray[np.str_ | np.bytes_]: ...
 
-def stringtoarr(string, NUMCHARS: int, dtype: str = 'S'): ...
-def stringtochar(a, encoding='utf-8'): ...
-def chartostring(b, encoding='utf-8'): ...
+@overload
+def stringtochar(
+    a: npt.NDArray[np.character],
+    encoding: Literal["none", "None", "bytes"] = ...,
+) -> npt.NDArray[np.bytes_]: ...
+@overload
+def stringtochar(
+    a: npt.NDArray[np.character],
+    encoding: LiteralString = ...,
+) -> npt.NDArray[np.str_]: ...
+@overload
+def stringtochar(
+    a: npt.NDArray[np.character],
+    encoding: str = ...,
+) -> npt.NDArray[np.str_ | np.bytes_]: ...
+def stringtochar(
+    a: npt.NDArray[np.character],
+    encoding: str = 'utf-8',
+) -> npt.NDArray[np.str_ | np.bytes_]: ...
+
+@overload
+def chartostring(
+    b: npt.NDArray[np.character],
+    encoding: Literal["none", "None", "bytes"] = ...,
+) -> npt.NDArray[np.bytes_]: ...
+@overload
+def chartostring(
+    b: npt.NDArray[np.character],
+    encoding: LiteralString = ...,
+) -> npt.NDArray[np.str_]: ...
+@overload
+def chartostring(
+    b: npt.NDArray[np.character],
+    encoding: str = ...,
+) -> npt.NDArray[np.str_ | np.bytes_]: ...
+def chartostring(
+    b: npt.NDArray[np.character],
+    encoding: str = 'utf-8',
+) -> npt.NDArray[np.str_ | np.bytes_]: ...
+
 def getlibversion() -> str: ...
 def set_alignment(threshold: int, alignment: int): ...
 def get_alignment() -> tuple[int, int]: ...
