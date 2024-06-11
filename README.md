@@ -1,6 +1,6 @@
 # netCDF4-python-stubs
 
-This is a stub package for netCDF4-python
+This is a type stub package for the nPython netCDF4 package
 \[[GH](https://github.com/Unidata/netcdf4-python)\]
 \[[PyPI](https://pypi.org/project/netCDF4/)\].
 The Unidata team is welcome to merge this into netCDF4-python if and when they see fit.
@@ -18,5 +18,5 @@ I have endeavored to match types as closely as possible to the code, e.g. using 
 and `numpy.typing.NDArray[<numpy type>]` where possible.
 
 I have endeavored to follow the guidance at
+<https://typing.readthedocs.io/en/latest/spec/distributing.html> and
 <https://typing.readthedocs.io/en/latest/source/stubs.html> as closely as possible.
-
