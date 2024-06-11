@@ -62,27 +62,28 @@ CfCalendar: TypeAlias = Literal[
 ]
 """Calendar names usable by cftime.datetime -- defined in the CF metadata conventions"""
 
-default_fillvals: dict[str, int | float]
+default_fillvals: dict[str, str | int | float]
+"""Mapping of data types to default values to be used for _FillValue"""
 
 __version__: str
 __netcdf4libversion__: str
 __hdf5libversion__: str
-__has_rename_grp__: bool
-__has_nc_inq_path__: bool
-__has_nc_inq_format_extended__: bool
-__has_nc_open_mem__: bool
-__has_nc_create_mem__: bool
-__has_cdf5_format__: bool
-__has_parallel4_support__: bool
-__has_pnetcdf_support__: bool
-__has_parallel_support__: bool
-__has_quantization_support__: bool
-__has_zstandard_support__: bool
-__has_bzip2_support__: bool
-__has_blosc_support__: bool
-__has_szip_support__: bool
-__has_set_alignment__: bool
-__has_ncfilter__: bool
+__has_rename_grp__: int
+__has_nc_inq_path__: int
+__has_nc_inq_format_extended__: int
+__has_nc_open_mem__: int
+__has_nc_create_mem__: int
+__has_cdf5_format__: int
+__has_parallel4_support__: int
+__has_pnetcdf_support__: int
+# __has_parallel_support__: bool
+__has_quantization_support__: int
+__has_zstandard_support__: int
+__has_bzip2_support__: int
+__has_blosc_support__: int
+__has_szip_support__: int
+__has_set_alignment__: int
+# __has_ncfilter__: bool
 is_native_little: bool
 is_native_big: bool
 default_encoding: str
@@ -484,4 +485,6 @@ def num2date(
     only_use_cftime_datetimes: bool = True,
     only_use_python_datetimes: bool = False,
     has_year_zero: bool | None = None,
-) -> datetime.datetime | DateTimeArr: ...
+) -> datetime.datetime | DateTimeArr:
+    """The docstring"""
+    ...
