@@ -1,0 +1,26 @@
+[tool.poetry]
+name = "netcdf4-stubs"
+version = "0.1.0"
+description = "Stub files for the netCDF4 package"
+authors = ["Randall Pittman <pittmara@oregonstate.edu>"]
+license = "MIT"
+readme = "README.md"
+packages = [
+    { include = "netCDF4-stubs" },
+    { include = "netCDF4-stubs/*.pyi"},
+]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+netCDF4 = "^1.6.5"
+
+[tool.poetry.group.dev.dependencies]
+mypy = "^1.10.0"
+ipython = "^8.25.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.ruff]
+line-length = 130  # per Python typing documentation
