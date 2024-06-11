@@ -8,17 +8,52 @@ import cftime  # type: ignore
 
 from typing_extensions import LiteralString, TypeAlias
 
-Datatype: TypeAlias = Literal['S1', 'c', 'i1', 'b', 'B', 'u1', 'i2',
-                              'h', 's', 'u2', 'i4', 'i', 'l', 'u4',
-                              'i8', 'u8', 'f4', 'f', 'f8', 'd']
-Compression: TypeAlias = Literal['zlib', 'szip', 'zstd', 'blosc_lz',
-                                 'blosc_lz4', 'blosc_lz4hc', 'blosc_zlib', 'blosc_zstd']
-AccessMode: TypeAlias = Literal['r', 'w',
-                                'r+', 'a', 'x', 'rs', 'ws', 'r+s', 'as']
-Format: TypeAlias = Literal['NETCDF4', 'NETCDF4_CLASSIC', 'NETCDF3_CLASSIC',
-                            'NETCDF3_64BIT_OFFSET', 'NETCDF3_64BIT_DATA']
-DiskFormat: TypeAlias = Literal['NETCDF3', 'HDF5', 'HDF4',
-                                'PNETCDF', 'DAP2', 'DAP4', 'UNDEFINED']
+Datatype: TypeAlias = Literal[
+    'S1', 'c',       # NC_CHAR
+    'i1', 'b', 'B',  # NC_BYTE
+    'u1',            # NC_UBYTE
+    'i2', 'h', 's',  # NC_SHORT
+    'u2',            # NC_USHORT
+    'i4', 'i', 'l',  # NC_INT
+    'u4',            # NC_UINT
+    'i8',            # NC_INT64
+    'u8',            # NC_UINT64
+    'f4', 'f',       # NC_FLOAT
+    'f8', 'd',       # NC_DOUBLE
+]
+"""Valid datatype specifiers"""
+
+Compression: TypeAlias = Literal[
+    'zlib',
+    'szip',
+    'zstd',
+    'blosc_lz',
+    'blosc_lz4',
+    'blosc_lz4hc',
+    'blosc_zlib',
+    'blosc_zstd',
+]
+"""Compression type"""
+
+AccessMode: TypeAlias = Literal[
+    'r', 'w', 'r+', 'a', 'x', 'rs', 'ws', 'r+s', 'as'
+]
+"""File access mode"""
+
+Format: TypeAlias = Literal[
+    'NETCDF4',
+    'NETCDF4_CLASSIC',
+    'NETCDF3_CLASSIC',
+    'NETCDF3_64BIT_OFFSET',
+    'NETCDF3_64BIT_DATA'
+]
+"""NetCDF file format"""
+
+DiskFormat: TypeAlias = Literal[
+    'NETCDF3', 'HDF5', 'HDF4', 'PNETCDF', 'DAP2', 'DAP4', 'UNDEFINED'
+]
+"""Underlying file format"""
+
 DateTimeArr: TypeAlias = npt.NDArray[np.object_]
 """numpy array of datetime.datetime or cftime.datetime"""
 
