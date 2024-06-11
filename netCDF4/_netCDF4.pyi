@@ -1,3 +1,4 @@
+from collections.abc import Sequence
 from typing import Any, Literal, Optional, Tuple, overload
 import numpy as np
 import numpy.typing as npt
@@ -18,6 +19,9 @@ Format: TypeAlias = Literal['NETCDF4', 'NETCDF4_CLASSIC', 'NETCDF3_CLASSIC',
                             'NETCDF3_64BIT_OFFSET', 'NETCDF3_64BIT_DATA']
 DiskFormat: TypeAlias = Literal['NETCDF3', 'HDF5', 'HDF4',
                                 'PNETCDF', 'DAP2', 'DAP4', 'UNDEFINED']
+DateTimeArr: TypeAlias = npt.NDArray[np.object_]
+"""numpy array of datetime.datetime or cftime.datetime"""
+
 default_fillvals: dict[str, int | float]
 
 __version__: str
@@ -530,32 +534,34 @@ def set_chunk_cache(size: Optional[int] = None,
 
 def get_chunk_cache() -> tuple[int, int, float]: ...
 
-
+# date2index, date2num, and num2date are actually provided by cftime and if stubs for
+# cftime are completed these should be removed.
 def date2index(
-    dates: datetime.datetime | cftime.datetime,
-    nctime: MFTime,
-    calendar: Optional[Literal['standard', 'gregorian', 'proleptic_gregorian' 'noleap',
+    dates: datetime.datetime | cftime.datetime | Sequence[datetime.datetime | cftime.datetime] | DateTimeArr,
+    nctime: Variable,
+    calendar: Optional[Literal['standard', 'gregorian', 'proleptic_gregorian', 'noleap',
                                '365_day', '360_day', 'julian', 'all_leap', '366_day']] = None,
     select: Literal['exact', 'before', 'after', 'nearest'] = 'exact',
-    has_year_zero: Optional[bool] = None): ...
+    has_year_zero: Optional[bool] = None
+) -> int | npt.NDArray[np.int_]: ...
 
 
 def date2num(
-    dates: datetime.datetime | cftime.datetime,
+    dates: datetime.datetime | cftime.datetime | Sequence[datetime.datetime | cftime.datetime] | DateTimeArr,
     units: str,
-    calendar: Optional[Literal['standard', 'gregorian', 'proleptic_gregorian' 'noleap',
+    calendar: Optional[Literal['standard', 'gregorian', 'proleptic_gregorian', 'noleap',
                                '365_day', '360_day', 'julian', 'all_leap', '366_day']] = None,
     has_year_zero: Optional[bool] = None,
     longdouble: bool = False
-): ...
+) -> np.number | npt.NDArray[np.number]: ...
 
 
 def num2date(
-    times: Any,
+    times: Sequence[int | float | np.number] | npt.NDArray[np.number],
     units: str,
-    calendar: Literal['standard', 'gregorian', 'proleptic_gregorian' 'noleap',
+    calendar: Literal['standard', 'gregorian', 'proleptic_gregorian', 'noleap',
                       '365_day', '360_day', 'julian', 'all_leap', '366_day'] = 'standard',
     only_use_cftime_datetimes: bool = True,
     only_use_python_datetimes: bool = False,
     has_year_zero: Optional[bool] = None
-): ...
+) -> datetime.datetime | DateTimeArr: ...
