@@ -8,50 +8,42 @@ import cftime  # type: ignore
 
 from typing_extensions import LiteralString, TypeAlias
 
+# fmt: off
 Datatype: TypeAlias = Literal[
-    'S1', 'c',       # NC_CHAR
-    'i1', 'b', 'B',  # NC_BYTE
-    'u1',            # NC_UBYTE
-    'i2', 'h', 's',  # NC_SHORT
-    'u2',            # NC_USHORT
-    'i4', 'i', 'l',  # NC_INT
-    'u4',            # NC_UINT
-    'i8',            # NC_INT64
-    'u8',            # NC_UINT64
-    'f4', 'f',       # NC_FLOAT
-    'f8', 'd',       # NC_DOUBLE
+    "S1", "c",       # NC_CHAR
+    "i1", "b", "B",  # NC_BYTE
+    "u1",            # NC_UBYTE
+    "i2", "h", "s",  # NC_SHORT
+    "u2",            # NC_USHORT
+    "i4", "i", "l",  # NC_INT
+    "u4",            # NC_UINT
+    "i8",            # NC_INT64
+    "u8",            # NC_UINT64
+    "f4", "f",       # NC_FLOAT
+    "f8", "d",       # NC_DOUBLE
 ]
 """Valid datatype specifiers"""
+# fmt: on
 
 Compression: TypeAlias = Literal[
-    'zlib',
-    'szip',
-    'zstd',
-    'blosc_lz',
-    'blosc_lz4',
-    'blosc_lz4hc',
-    'blosc_zlib',
-    'blosc_zstd',
+    "zlib",
+    "szip",
+    "zstd",
+    "blosc_lz",
+    "blosc_lz4",
+    "blosc_lz4hc",
+    "blosc_zlib",
+    "blosc_zstd",
 ]
 """Compression type"""
 
-AccessMode: TypeAlias = Literal[
-    'r', 'w', 'r+', 'a', 'x', 'rs', 'ws', 'r+s', 'as'
-]
+AccessMode: TypeAlias = Literal["r", "w", "r+", "a", "x", "rs", "ws", "r+s", "as"]
 """File access mode"""
 
-Format: TypeAlias = Literal[
-    'NETCDF4',
-    'NETCDF4_CLASSIC',
-    'NETCDF3_CLASSIC',
-    'NETCDF3_64BIT_OFFSET',
-    'NETCDF3_64BIT_DATA'
-]
+Format: TypeAlias = Literal["NETCDF4", "NETCDF4_CLASSIC", "NETCDF3_CLASSIC", "NETCDF3_64BIT_OFFSET", "NETCDF3_64BIT_DATA"]
 """NetCDF file format"""
 
-DiskFormat: TypeAlias = Literal[
-    'NETCDF3', 'HDF5', 'HDF4', 'PNETCDF', 'DAP2', 'DAP4', 'UNDEFINED'
-]
+DiskFormat: TypeAlias = Literal["NETCDF3", "HDF5", "HDF4", "PNETCDF", "DAP2", "DAP4", "UNDEFINED"]
 """Underlying file format"""
 
 DateTimeArr: TypeAlias = npt.NDArray[np.object_]
@@ -69,7 +61,6 @@ CfCalendar: TypeAlias = Literal[
     "366_day",
 ]
 """Calendar names usable by cftime.datetime -- defined in the CF metadata conventions"""
-
 
 default_fillvals: dict[str, int | float]
 
@@ -97,19 +88,10 @@ is_native_big: bool
 default_encoding: str
 unicode_error: str
 
-
 class NetCDF4MissingFeatureException(Exception):
-    ...
-
-    def __init__(
-        self,
-        feature: str,
-        version: str
-    ): ...
-
+    def __init__(self, feature: str, version: str): ...
 
 class Dataset:
-    ...
     @property
     def groups(self) -> dict[str, Group]: ...
     @property
@@ -138,62 +120,33 @@ class Dataset:
     def _ncstring_attrs__(self) -> bool: ...
     @property
     def __orthogonal_indexing__(self) -> bool: ...
-
     def __init__(
         self,
         filename: str | os.PathLike,
-        mode: AccessMode = 'r',
+        mode: AccessMode = "r",
         clobber: bool = True,
-        format: Format = 'NETCDF4',
+        format: Format = "NETCDF4",
         diskless: bool = False,
         persist: bool = False,
         keepweakref: bool = False,
-        memory: Optional[Literal['r', 'w']] = None,
+        memory: Optional[Literal["r", "w"]] = None,
         encoding: Optional[str] = None,
         parallel: bool = False,
         comm=None,
         info=None,
-        **kwargs
+        **kwargs,
     ): ...
-
     def filepath(self, encoding: Optional[str] = None) -> str: ...
     def isopen(self) -> bool: ...
     def close(self) -> bool: ...
     def sync(self) -> None: ...
     def set_fill_on(self) -> None: ...
     def set_fill_off(self) -> None: ...
-
-    def createDimension(
-        self,
-        dimname: str,
-        size: Optional[int] = None
-    ) -> Dimension: ...
-
-    def renameDimension(
-        self,
-        oldname: str,
-        newname: str
-    ) -> None: ...
-
-    def createCompoundType(
-        self,
-        datatype: npt.DTypeLike,
-        datatype_name: str
-    ) -> CompoundType: ...
-
-    def createVLType(
-        self,
-        datatype: npt.DTypeLike,
-        datatype_name: str
-    ) -> VLType: ...
-
-    def createEnumType(
-        self,
-        datatype: npt.DTypeLike,
-        datatype_name: str,
-        enum_dict: dict[str, int]
-    ) -> EnumType: ...
-
+    def createDimension(self, dimname: str, size: Optional[int] = None) -> Dimension: ...
+    def renameDimension(self, oldname: str, newname: str) -> None: ...
+    def createCompoundType(self, datatype: npt.DTypeLike, datatype_name: str) -> CompoundType: ...
+    def createVLType(self, datatype: npt.DTypeLike, datatype_name: str) -> VLType: ...
+    def createEnumType(self, datatype: npt.DTypeLike, datatype_name: str, enum_dict: dict[str, int]) -> EnumType: ...
     def createVariable(
         self,
         varname: str,
@@ -203,28 +156,26 @@ class Dataset:
         zlib: bool = False,
         complevel: Optional[Literal[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]] = 4,
         shuffle: bool = True,
-        szip_coding: Literal['nn', 'ec'] = 'nn',
+        szip_coding: Literal["nn", "ec"] = "nn",
         szip_pixels_per_block: Literal[4, 8, 16, 32] = 8,
         blosc_shuffle: Literal[0, 1, 2] = 1,
         fletcher32: bool = False,
         contiguous: bool = False,
         chunksizes: Optional[int] = None,
-        endian: Literal['native', 'little', 'big'] = 'native',
+        endian: Literal["native", "little", "big"] = "native",
         least_significant_digit: Optional[int] = None,
         significant_digits: Optional[int] = None,
-        quantize_mode: Literal['BitGroom', 'BitRound',
-                               'GranularBitRound'] = 'BitGroom',
+        quantize_mode: Literal["BitGroom", "BitRound", "GranularBitRound"] = "BitGroom",
         fill_value: Optional[bool] = None,
-        chunk_cache: Optional[int] = None
+        chunk_cache: Optional[int] = None,
     ) -> Variable: ...
-
     def renameVariable(self, oldname: str, newname: str) -> None: ...
     def createGroup(self, groupname: str) -> Group: ...
     def ncattrs(self) -> list[str]: ...
     def setncattr_string(self, name: str, value) -> None: ...
     def setncattr(self, name: str, value) -> None: ...
     def setncatts(self, attdict) -> None: ...
-    def getncattr(self, name: str, encoding='utf-8') -> Dataset | Group: ...
+    def getncattr(self, name: str, encoding="utf-8") -> Dataset | Group: ...
     def delncattr(self, name: str) -> None: ...
     def renameAttribute(self, oldname: str, newname: str) -> None: ...
     def renameGroup(self, oldname: str, newname: str) -> None: ...
@@ -235,30 +186,20 @@ class Dataset:
     def set_always_mask(self, value) -> None: ...
     def set_ncstring_attrs(self, value) -> None: ...
     def get_variables_by_attributes(self, **kwargs) -> list[Variable]: ...
-
     @property
     def name(self) -> str: ...
-
     @staticmethod
     def fromcdl(
         cdlfilename: str,
         ncfilename: Optional[str] = None,
-        mode: AccessMode = 'a',
-        format: Format = 'NETCDF4'
+        mode: AccessMode = "a",
+        format: Format = "NETCDF4",
     ) -> Dataset: ...
-
-    def tocdl(
-        self,
-        coordvars: bool = False,
-        data: bool = False,
-        outfile: Optional[str] = None
-    ) -> None | bool: ...
-
+    def tocdl(self, coordvars: bool = False, data: bool = False, outfile: Optional[str] = None) -> None | bool: ...
     def has_blosc_filter(self) -> bool: ...
     def has_zstd_filter(self) -> bool: ...
     def has_bzip2_filter(self) -> bool: ...
     def has_szip_filter(self) -> bool: ...
-
     def __setattr__(self, name: str, value): ...
     def __getattr__(self, name: str): ...
     def __delattr__(self, name: str): ...
@@ -267,29 +208,12 @@ class Dataset:
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
 
-
 class Group(Dataset):
-    ...
-
-    def __init__(
-        self,
-        parent: Group | Dataset,
-        name: str,
-        **kwargs
-    ): ...
+    def __init__(self, parent: Group | Dataset, name: str, **kwargs): ...
     def close(self) -> bool: ...
 
-
 class Dimension:
-    ...
-
-    def __init__(
-        self,
-        grp: Group,
-        name: str,
-        size: Optional[int] = None,
-        **kwargs
-    ): ...
+    def __init__(self, grp: Group, name: str, size: Optional[int] = None, **kwargs): ...
     @property
     def name(self) -> str: ...
     @property
@@ -299,10 +223,7 @@ class Dimension:
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
 
-
 class Variable:
-    ...
-
     @property
     def dimensions(self) -> Tuple[str]: ...
     @property
@@ -319,7 +240,6 @@ class Variable:
     def chartostring(self) -> bool: ...
     @property
     def always_mask(self) -> bool: ...
-
     def __init__(
         self,
         grp: Group,
@@ -330,42 +250,38 @@ class Variable:
         zlib: bool = False,
         complevel: Optional[Literal[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]] = 4,
         shuffle: bool = True,
-        szip_coding: Literal['nn', 'ec'] = 'nn',
+        szip_coding: Literal["nn", "ec"] = "nn",
         szip_pixels_per_block: Literal[4, 8, 16, 32] = 8,
         blosc_shuffle: Literal[0, 1, 2] = 1,
         fletcher32: bool = False,
         contiguous: bool = False,
         chunksizes: Optional[int] = None,
-        endian: Literal['native', 'little', 'big'] = 'native',
+        endian: Literal["native", "little", "big"] = "native",
         least_significant_digit: Optional[int] = None,
         significant_digits: Optional[int] = None,
-        quantize_mode: Literal['BitGroom', 'BitRound',
-                               'GranularBitRound'] = 'BitGroom',
+        quantize_mode: Literal["BitGroom", "BitRound", "GranularBitRound"] = "BitGroom",
         fill_value: Optional[bool] = None,
         chunk_cache: Optional[int] = None,
-        **kwargs
+        **kwargs,
     ): ...
-
     def group(self) -> Group: ...
     def ncattrs(self) -> list[str]: ...
     def setncattr(self, name: str, value) -> None: ...
     def setncattr_string(self, name: str, value) -> None: ...
     def setncatts(self, attdict) -> None: ...
-    def getncattr(self, name: str, encoding='utf-8'): ...
+    def getncattr(self, name: str, encoding="utf-8"): ...
     def delncattr(self, name: str) -> None: ...
     def filters(self) -> dict: ...
     def quantization(self) -> int: ...
     def endian(self) -> str: ...
     def chunking(self) -> str | list[int]: ...
     def get_var_chunk_cache(self) -> tuple[int, int, float]: ...
-
     def set_var_chunk_cache(
         self,
         size: Optional[int] = None,
         nelems: Optional[int] = None,
-        preemption: Optional[float] = None
+        preemption: Optional[float] = None,
     ) -> None: ...
-
     def renameAttribute(self, oldname: str, newname: str) -> None: ...
     def assignValue(self, val) -> None: ...
     def getValue(self) -> Any: ...
@@ -378,7 +294,6 @@ class Variable:
     def set_ncstring_attrs(self, ncstring_attrs) -> None: ...
     def set_collective(self, value) -> None: ...
     def get_dims(self) -> tuple[Dimension]: ...
-
     @property
     def name(self) -> str: ...
     @property
@@ -387,7 +302,6 @@ class Variable:
     def size(self) -> int: ...
     @property
     def __orthogonal_indexing__(self) -> bool: ...
-
     def __setitem__(self, elem, data): ...
     def __len__(self) -> int: ...
     def __array__(self) -> npt.ArrayLike: ...
@@ -398,77 +312,56 @@ class Variable:
     def __getattr__(self, name: str): ...
     def __getitem__(self, elem): ...
 
-
 class CompoundType:
-    ...
     @property
     def dtype(self) -> npt.DTypeLike: ...
     @property
     def name(self) -> str: ...
     @property
     def dtype_view(self) -> npt.DTypeLike: ...
-
     def __init__(self, grp, datatype, dtype_name, **kwargs): ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
     def __reduce__(self): ...
 
-
 class VLType:
-    ...
     @property
     def dtype(self) -> npt.DTypeLike: ...
     @property
     def name(self) -> str: ...
-
-    def __init__(
-        self,
-        grp: Group,
-        datatype: npt.DTypeLike,
-        dtype_name: str,
-        **kwargs
-    ): ...
-
+    def __init__(self, grp: Group, datatype: npt.DTypeLike, dtype_name: str, **kwargs): ...
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
     def __reduce__(self): ...
 
-
 class EnumType:
-    ...
     @property
     def dtype(self) -> npt.DTypeLike: ...
     @property
     def name(self) -> str: ...
     @property
     def enum_dict(self) -> dict[str, int]: ...
-
     def __init__(
         self,
         grp: Group,
         datatype: npt.DTypeLike,
         dtype_name: str,
         enum_dict: dict[str, int],
-        **kwargs
+        **kwargs,
     ): ...
-
     def __str__(self) -> str: ...
     def __repr__(self) -> str: ...
     def __reduce__(self): ...
 
-
 class MFDataset(Dataset):
-    ...
-
     def __init__(
         self,
         files: str | os.PathLike,
         check: bool = False,
         aggdim: Optional[str] = None,
         exclude: list[str] = [],
-        master_file: Optional[str | os.PathLike] = None
+        master_file: Optional[str | os.PathLike] = None,
     ): ...
-
     def __setattr__(self, name: str, value: Any): ...
     def __getattribute__(self, name: str): ...
     def ncattrs(self): ...
@@ -477,15 +370,12 @@ class MFDataset(Dataset):
     def __repr__(self) -> str: ...
     def __reduce__(self): ...
 
-
 class _Variable:
-    ...
     def __init__(self, dset, varname, var, recdimname): ...
     def __getattr__(self, name): ...
     def __repr__(self): ...
     def __len__(self): ...
     def __getitem__(self, elem): ...
-
     def typecode(self): ...
     def ncattrs(self): ...
     def _shape(self): ...
@@ -495,15 +385,12 @@ class _Variable:
     def set_auto_scale(self, val): ...
     def set_always_mask(self, val): ...
 
-
 class MFTime(_Variable):
-    ...
-
     def __init__(
         self,
         time: Variable,
         units=None,
-        calendar: Optional[Literal['standard', 'gregorian']] = None
+        calendar: Optional[Literal["standard", "gregorian"]] = None,
     ): ...
     def __getitem__(self, elem): ...
 
@@ -528,9 +415,8 @@ def stringtoarr(
 def stringtoarr(
     string: str,
     NUMCHARS: int,
-    dtype: str = 'S',
+    dtype: str = "S",
 ) -> npt.NDArray[np.str_ | np.bytes_]: ...
-
 @overload
 def stringtochar(
     a: npt.NDArray[np.character],
@@ -548,9 +434,8 @@ def stringtochar(
 ) -> npt.NDArray[np.str_ | np.bytes_]: ...
 def stringtochar(
     a: npt.NDArray[np.character],
-    encoding: str = 'utf-8',
+    encoding: str = "utf-8",
 ) -> npt.NDArray[np.str_ | np.bytes_]: ...
-
 @overload
 def chartostring(
     b: npt.NDArray[np.character],
@@ -568,44 +453,25 @@ def chartostring(
 ) -> npt.NDArray[np.str_ | np.bytes_]: ...
 def chartostring(
     b: npt.NDArray[np.character],
-    encoding: str = 'utf-8',
+    encoding: str = "utf-8",
 ) -> npt.NDArray[np.str_ | np.bytes_]: ...
-
 def getlibversion() -> str: ...
 def set_alignment(threshold: int, alignment: int): ...
 def get_alignment() -> tuple[int, int]: ...
-
-
-def set_chunk_cache(
-    size: int | None = None,
-    nelems: int | None = None,
-    preemption: float | None = None
-): ...
-
-
+def set_chunk_cache(size: int | None = None, nelems: int | None = None, preemption: float | None = None): ...
 def get_chunk_cache() -> tuple[int, int, float]: ...
 
 # date2index, date2num, and num2date are actually provided by cftime and if stubs for
 # cftime are completed these should be removed.
 def date2index(
-    dates: (
-        datetime.datetime
-        | cftime.datetime
-        | Sequence[datetime.datetime | cftime.datetime]
-        | DateTimeArr
-    ),
+    dates: (datetime.datetime | cftime.datetime | Sequence[datetime.datetime | cftime.datetime] | DateTimeArr),
     nctime: Variable,
     calendar: CfCalendar | None = None,
     select: Literal["exact", "before", "after", "nearest"] = "exact",
     has_year_zero: bool | None = None,
 ) -> int | npt.NDArray[np.int_]: ...
 def date2num(
-    dates: (
-        datetime.datetime
-        | cftime.datetime
-        | Sequence[datetime.datetime | cftime.datetime]
-        | DateTimeArr
-    ),
+    dates: (datetime.datetime | cftime.datetime | Sequence[datetime.datetime | cftime.datetime] | DateTimeArr),
     units: str,
     calendar: CfCalendar | None = None,
     has_year_zero: bool | None = None,
