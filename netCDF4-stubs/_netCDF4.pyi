@@ -1,12 +1,12 @@
 from collections.abc import Sequence
-from typing import Any, Literal, NoReturn, Type, overload
+from typing import Any, Literal, NoReturn, Type, TypedDict, overload
 import numpy as np
 import numpy.typing as npt
 import os
 import datetime
 import cftime  # type: ignore
 
-from typing_extensions import Buffer, LiteralString, TypeAlias
+from typing_extensions import Buffer, LiteralString, Self, TypeAlias
 
 # fmt: off
 Datatype: TypeAlias = Literal[
@@ -46,6 +46,19 @@ Format: TypeAlias = Literal["NETCDF4", "NETCDF4_CLASSIC", "NETCDF3_CLASSIC", "NE
 DiskFormat: TypeAlias = Literal["NETCDF3", "HDF5", "HDF4", "PNETCDF", "DAP2", "DAP4", "UNDEFINED"]
 """Underlying file format"""
 
+QuantMode: TypeAlias = Literal["BitGroom", "BitRound", "GranularBitRound"]
+"""Quantization algorithm"""
+
+GetSetItemIdx: TypeAlias = (
+    int
+    | slice
+    | ellipsis
+    | list[int | bool]
+    | npt.NDArray[np.integer | np.bool_]
+    | tuple[int | slice | ellipsis | Sequence[int | bool] | npt.NDArray[np.integer | np.bool_], ...]
+)
+"""Valid 'index' type for Variable.__getitem__ or Variable.__setitem__"""
+
 DateTimeArr: TypeAlias = npt.NDArray[np.object_]
 """numpy array of datetime.datetime or cftime.datetime"""
 
@@ -61,6 +74,26 @@ CfCalendar: TypeAlias = Literal[
     "366_day",
 ]
 """Calendar names usable by cftime.datetime -- defined in the CF metadata conventions"""
+
+class BloscInfo(TypedDict):
+    compressor: Literal["blosc_lz", "blosc_lz4", "blosc_lz4hc", "blosc_zlib", "blosc_zstd"]
+    shuffle: Literal[0, 1, 2]
+
+class SzipInfo(TypedDict):
+    coding: Literal["nn", "ec"]
+    pixels_per_block: Literal[4, 8, 16, 32]
+
+class FiltersDict(TypedDict):
+    """Dict returned from netCDF4.Variable.filters()"""
+
+    zlib: bool
+    szip: Literal[False] | SzipInfo
+    zstd: bool
+    bzip2: bool
+    blosc: Literal[False] | BloscInfo
+    shuffle: bool
+    complevel: int
+    fletcher32: bool
 
 default_fillvals: dict[str, str | int | float]
 """Mapping of data types to default values to be used for _FillValue"""
