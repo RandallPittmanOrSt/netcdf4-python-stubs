@@ -1,12 +1,12 @@
 from collections.abc import Sequence
-from typing import Any, Literal, Optional, Tuple, overload
+from typing import Any, Literal, Type, overload
 import numpy as np
 import numpy.typing as npt
 import os
 import datetime
 import cftime  # type: ignore
 
-from typing_extensions import LiteralString, TypeAlias
+from typing_extensions import Buffer, LiteralString, TypeAlias
 
 # fmt: off
 Datatype: TypeAlias = Literal[
@@ -114,13 +114,13 @@ class Dataset:
     @property
     def parent(self) -> Dataset | None: ...
     @property
-    def path(self) -> os.PathLike | str: ...
+    def path(self) -> str: ...
     @property
     def keepweakref(self) -> bool: ...
     @property
     def _ncstring_attrs__(self) -> bool: ...
     @property
-    def __orthogonal_indexing__(self) -> bool: ...
+    def __orthogonal_indexing__(self) -> Literal[True]: ...
     def __init__(
         self,
         filename: str | os.PathLike,
@@ -130,45 +130,47 @@ class Dataset:
         diskless: bool = False,
         persist: bool = False,
         keepweakref: bool = False,
-        memory: Optional[Literal["r", "w"]] = None,
-        encoding: Optional[str] = None,
+        memory: Buffer | int | None = None,
+        encoding: str | None = None,
         parallel: bool = False,
         comm=None,
         info=None,
         **kwargs,
     ): ...
-    def filepath(self, encoding: Optional[str] = None) -> str: ...
+    def filepath(self, encoding: str | None = None) -> str: ...
     def isopen(self) -> bool: ...
-    def close(self) -> bool: ...
+    def close(self) -> memoryview | None: ...
     def sync(self) -> None: ...
     def set_fill_on(self) -> None: ...
     def set_fill_off(self) -> None: ...
-    def createDimension(self, dimname: str, size: Optional[int] = None) -> Dimension: ...
+    def createDimension(self, dimname: str, size: int | None = None) -> Dimension: ...
     def renameDimension(self, oldname: str, newname: str) -> None: ...
     def createCompoundType(self, datatype: npt.DTypeLike, datatype_name: str) -> CompoundType: ...
     def createVLType(self, datatype: npt.DTypeLike, datatype_name: str) -> VLType: ...
-    def createEnumType(self, datatype: npt.DTypeLike, datatype_name: str, enum_dict: dict[str, int]) -> EnumType: ...
+    def createEnumType(
+            self, datatype: np.dtype[np.integer] | Type[np.integer], datatype_name: str, enum_dict: dict[str, int]
+    ) -> EnumType: ...
     def createVariable(
         self,
         varname: str,
         datatype: Datatype | npt.DTypeLike | str | CompoundType | VLType,
-        dimensions: Tuple[str] | Tuple[()] | str | Dimension = (),
-        compression: Optional[Compression] = None,
+        dimensions: tuple[str] | tuple[()] | str | Dimension = (),
+        compression: Compression | None = None,
         zlib: bool = False,
-        complevel: Optional[Literal[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]] = 4,
+        complevel: Literal[0, 1, 2, 3, 4, 5, 6, 7, 8, 9] | None = 4,
         shuffle: bool = True,
         szip_coding: Literal["nn", "ec"] = "nn",
         szip_pixels_per_block: Literal[4, 8, 16, 32] = 8,
         blosc_shuffle: Literal[0, 1, 2] = 1,
         fletcher32: bool = False,
         contiguous: bool = False,
-        chunksizes: Optional[int] = None,
+        chunksizes: int | None = None,
         endian: Literal["native", "little", "big"] = "native",
-        least_significant_digit: Optional[int] = None,
-        significant_digits: Optional[int] = None,
+        least_significant_digit: int | None = None,
+        significant_digits: int | None = None,
         quantize_mode: Literal["BitGroom", "BitRound", "GranularBitRound"] = "BitGroom",
-        fill_value: Optional[bool] = None,
-        chunk_cache: Optional[int] = None,
+        fill_value: bool | None = None,
+        chunk_cache: int | None = None,
     ) -> Variable: ...
     def renameVariable(self, oldname: str, newname: str) -> None: ...
     def createGroup(self, groupname: str) -> Group: ...
@@ -192,11 +194,11 @@ class Dataset:
     @staticmethod
     def fromcdl(
         cdlfilename: str,
-        ncfilename: Optional[str] = None,
+        ncfilename: str | None = None,
         mode: AccessMode = "a",
         format: Format = "NETCDF4",
     ) -> Dataset: ...
-    def tocdl(self, coordvars: bool = False, data: bool = False, outfile: Optional[str] = None) -> None | bool: ...
+    def tocdl(self, coordvars: bool = False, data: bool = False, outfile: str | None = None) -> None | bool: ...
     def has_blosc_filter(self) -> bool: ...
     def has_zstd_filter(self) -> bool: ...
     def has_bzip2_filter(self) -> bool: ...
@@ -214,7 +216,7 @@ class Group(Dataset):
     def close(self) -> bool: ...
 
 class Dimension:
-    def __init__(self, grp: Group, name: str, size: Optional[int] = None, **kwargs): ...
+    def __init__(self, grp: Group, name: str, size: int | None = None, **kwargs): ...
     @property
     def name(self) -> str: ...
     @property
@@ -226,13 +228,13 @@ class Dimension:
 
 class Variable:
     @property
-    def dimensions(self) -> Tuple[str]: ...
+    def dimensions(self) -> tuple[str, ...]: ...
     @property
     def dtype(self) -> npt.DTypeLike: ...
     @property
     def ndim(self) -> int: ...
     @property
-    def shape(self) -> Tuple[int]: ...
+    def shape(self) -> tuple[int, ...]: ...
     @property
     def scale(self) -> bool: ...
     @property
@@ -246,23 +248,23 @@ class Variable:
         grp: Group,
         name: str,
         datatype: Datatype | npt.DTypeLike | str | CompoundType | VLType,
-        dimensions: Tuple[str] | Tuple[()] | str | Dimension = (),
-        compression: Optional[Compression] = None,
+        dimensions: tuple[str] | tuple[()] | str | Dimension = (),
+        compression: Compression | None = None,
         zlib: bool = False,
-        complevel: Optional[Literal[0, 1, 2, 3, 4, 5, 6, 7, 8, 9]] = 4,
+        complevel: Literal[0, 1, 2, 3, 4, 5, 6, 7, 8, 9] | None = 4,
         shuffle: bool = True,
         szip_coding: Literal["nn", "ec"] = "nn",
         szip_pixels_per_block: Literal[4, 8, 16, 32] = 8,
         blosc_shuffle: Literal[0, 1, 2] = 1,
         fletcher32: bool = False,
         contiguous: bool = False,
-        chunksizes: Optional[int] = None,
+        chunksizes: int | None = None,
         endian: Literal["native", "little", "big"] = "native",
-        least_significant_digit: Optional[int] = None,
-        significant_digits: Optional[int] = None,
+        least_significant_digit: int | None = None,
+        significant_digits: int | None = None,
         quantize_mode: Literal["BitGroom", "BitRound", "GranularBitRound"] = "BitGroom",
-        fill_value: Optional[bool] = None,
-        chunk_cache: Optional[int] = None,
+        fill_value: bool | None = None,
+        chunk_cache: int | None = None,
         **kwargs,
     ): ...
     def group(self) -> Group: ...
@@ -279,9 +281,9 @@ class Variable:
     def get_var_chunk_cache(self) -> tuple[int, int, float]: ...
     def set_var_chunk_cache(
         self,
-        size: Optional[int] = None,
-        nelems: Optional[int] = None,
-        preemption: Optional[float] = None,
+        size: int | None = None,
+        nelems: int | None = None,
+        preemption: float | None = None,
     ) -> None: ...
     def renameAttribute(self, oldname: str, newname: str) -> None: ...
     def assignValue(self, val) -> None: ...
@@ -359,9 +361,9 @@ class MFDataset(Dataset):
         self,
         files: str | os.PathLike,
         check: bool = False,
-        aggdim: Optional[str] = None,
+        aggdim: str | None = None,
         exclude: list[str] = [],
-        master_file: Optional[str | os.PathLike] = None,
+        master_file: str | os.PathLike | None = None,
     ): ...
     def __setattr__(self, name: str, value: Any): ...
     def __getattribute__(self, name: str): ...
@@ -391,7 +393,7 @@ class MFTime(_Variable):
         self,
         time: Variable,
         units=None,
-        calendar: Optional[Literal["standard", "gregorian"]] = None,
+        calendar: Literal["standard", "gregorian"] | None = None,
     ): ...
     def __getitem__(self, elem): ...
 
