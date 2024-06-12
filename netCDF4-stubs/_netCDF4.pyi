@@ -157,19 +157,19 @@ class Dataset:
         dimensions: tuple[str, ...] | tuple[Dimension, ...] | str | Dimension = (),
         compression: Compression | None = None,
         zlib: bool = False,
-        complevel: Literal[0, 1, 2, 3, 4, 5, 6, 7, 8, 9] | None = 4,
+        complevel: Literal[0, 1, 2, 3, 4, 5, 6, 7, 8, 9] = 4,
         shuffle: bool = True,
         szip_coding: Literal["nn", "ec"] = "nn",
         szip_pixels_per_block: Literal[4, 8, 16, 32] = 8,
         blosc_shuffle: Literal[0, 1, 2] = 1,
         fletcher32: bool = False,
         contiguous: bool = False,
-        chunksizes: int | None = None,
+        chunksizes: tuple[int, ...] | None = None,
         endian: Literal["native", "little", "big"] = "native",
         least_significant_digit: int | None = None,
         significant_digits: int | None = None,
         quantize_mode: Literal["BitGroom", "BitRound", "GranularBitRound"] = "BitGroom",
-        fill_value: bool | None = None,
+        fill_value: Any | None = None,  # should be instance of `datatype`
         chunk_cache: int | None = None,
     ) -> Variable: ...
     def renameVariable(self, oldname: str, newname: str) -> None: ...
