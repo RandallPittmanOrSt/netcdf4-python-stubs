@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "netcdf4-stubs"
-version = "1.6.5"
+version = "0.1.0"
 description = "Stub files for the netCDF4 package"
 authors = ["Randall Pittman <pittmara@oregonstate.edu>"]
 license = "MIT"
