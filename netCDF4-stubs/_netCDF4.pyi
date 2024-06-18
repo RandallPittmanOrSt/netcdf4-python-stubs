@@ -168,6 +168,7 @@ class Dataset:
         parallel: bool = False,
         comm=None,
         info=None,
+        # auto_complex: bool = False,
         **kwargs,
     ): ...
     def filepath(self, encoding: str | None = None) -> str: ...
