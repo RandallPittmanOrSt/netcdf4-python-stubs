@@ -1,11 +1,11 @@
+import datetime
+import os
 from collections.abc import KeysView, Sequence
 from typing import Any, Literal, NoReturn, Type, TypedDict, overload
+
+import cftime  # type: ignore
 import numpy as np
 import numpy.typing as npt
-import os
-import datetime
-import cftime  # type: ignore
-
 from typing_extensions import Buffer, LiteralString, Self, TypeAlias
 
 # fmt: off
