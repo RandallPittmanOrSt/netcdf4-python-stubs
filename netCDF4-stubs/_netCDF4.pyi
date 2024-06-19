@@ -541,6 +541,4 @@ def num2date(
     only_use_cftime_datetimes: bool = True,
     only_use_python_datetimes: bool = False,
     has_year_zero: bool | None = None,
-) -> datetime.datetime | DateTimeArr:
-    """The docstring"""
-    ...
+) -> datetime.datetime | DateTimeArr: ...
