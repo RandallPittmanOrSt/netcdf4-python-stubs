@@ -455,43 +455,28 @@ class MFTime(_Variable):
 def stringtoarr(
     string: str,
     NUMCHARS: int,
-    dtype: Literal["S"] = ...,
+    dtype: Literal["S"] = "S",
 ) -> npt.NDArray[np.bytes_]: ...
 @overload
 def stringtoarr(
     string: str,
     NUMCHARS: int,
-    dtype: Literal["U"] = ...,
+    dtype: Literal["U"],
 ) -> npt.NDArray[np.str_]: ...
 @overload
-def stringtoarr(
-    string: str,
-    NUMCHARS: int,
-    dtype: str = ...,
-) -> npt.NDArray[np.str_ | np.bytes_]: ...
-def stringtoarr(
-    string: str,
-    NUMCHARS: int,
-    dtype: str = "S",
-) -> npt.NDArray[np.str_ | np.bytes_]: ...
-@overload
 def stringtochar(
     a: npt.NDArray[np.character],
-    encoding: Literal["none", "None", "bytes"] = ...,
+    encoding: Literal["none", "None", "bytes"],
 ) -> npt.NDArray[np.bytes_]: ...
 @overload
 def stringtochar(
     a: npt.NDArray[np.character],
-    encoding: LiteralString = ...,
+    encoding: LiteralString = "utf-8",  # anything that's not 'none', 'None', or 'bytes'
 ) -> npt.NDArray[np.str_]: ...
 @overload
 def stringtochar(
     a: npt.NDArray[np.character],
     encoding: str = ...,
-) -> npt.NDArray[np.str_ | np.bytes_]: ...
-def stringtochar(
-    a: npt.NDArray[np.character],
-    encoding: str = "utf-8",
 ) -> npt.NDArray[np.str_ | np.bytes_]: ...
 @overload
 def chartostring(
@@ -501,16 +486,12 @@ def chartostring(
 @overload
 def chartostring(
     b: npt.NDArray[np.character],
-    encoding: LiteralString = ...,
+    encoding: LiteralString = "utf-8",  # anything that's not 'none', 'None', or 'bytes'
 ) -> npt.NDArray[np.str_]: ...
 @overload
 def chartostring(
     b: npt.NDArray[np.character],
     encoding: str = ...,
-) -> npt.NDArray[np.str_ | np.bytes_]: ...
-def chartostring(
-    b: npt.NDArray[np.character],
-    encoding: str = "utf-8",
 ) -> npt.NDArray[np.str_ | np.bytes_]: ...
 def getlibversion() -> str: ...
 def set_alignment(threshold: int, alignment: int): ...
