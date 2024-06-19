@@ -1,12 +1,20 @@
 import datetime
 import os
+import sys
 from collections.abc import KeysView, Sequence
-from typing import Any, Literal, NoReturn, Type, TypedDict, overload
+from typing import TYPE_CHECKING, Any, Literal, NoReturn, Type, TypedDict, overload
 
 import cftime  # type: ignore
 import numpy as np
 import numpy.typing as npt
 from typing_extensions import Buffer, LiteralString, Self, TypeAlias
+
+if sys.version_info >= (3, 10):
+    from types import EllipsisType
+
+    ellipsis = EllipsisType
+elif not TYPE_CHECKING:
+    class ellipsis: ...  # keeps ruff happy until ruff uses typeshed
 
 # fmt: off
 Datatype: TypeAlias = Literal[
