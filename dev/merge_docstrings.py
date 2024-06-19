@@ -110,32 +110,30 @@ class AddDocstrings(cst.CSTTransformer):
         return False
 
 
-def prep_for_docstrings(infile, outfile=None):
+def prep_for_docstrings(pyi_file):
     """Prepare the pyi file for merging the docstrings.
 
     Due to my lack of a full understanding of libcst, it doesn't work to run the
     AddDocstrings transformer on the pyi file with function signatures ending in ": ...".
     Rather, the ellipsis must be on the next line. This function makes that modification.
     """
-    outfile = outfile or infile
-    subprocess.run(shlex.split(f'ruff format "{infile}"'), check=True)
-    subprocess.run(shlex.split(f'ruff check --select I --fix "{infile}"'), check=True)  # sort imports
-    with open(infile, "r") as pyi:
+    subprocess.run(shlex.split(f'ruff format "{pyi_file}"'), check=True)
+    subprocess.run(shlex.split(f'ruff check --select I --fix "{pyi_file}"'), check=True)  # sort imports
+    with open(pyi_file, "r") as pyi:
         lines = pyi.readlines()
     # Undo ruff formatting of ellipsis at the end of the line of a function or class def
     for i, line in enumerate(lines):
         lines[i] = re.sub(r"^( *)([^#].*:) \.\.\.( *(?:#.*))?$", r"\1\2\3\n\1    ...", line)
-    with open(outfile, "w") as tmp_pyi:
+    with open(pyi_file, "w") as tmp_pyi:
         tmp_pyi.write("".join(lines))
 
 
-def add_docstrings(docstrings: Dict[str, str], module_name: str, infile, outfile=None):
-    outfile = outfile or infile
-    tree = cst.parse_module(Path(infile).read_text())
+def add_docstrings(docstrings: Dict[str, str], module_name: str, pyi_file):
+    tree = cst.parse_module(Path(pyi_file).read_text())
     wrapper = MetadataWrapper(tree)
     transformer = AddDocstrings(module_name, docstrings)
     modified_tree = wrapper.visit(transformer)
-    Path(outfile).write_text(modified_tree.code)
+    Path(pyi_file).write_text(modified_tree.code)
 
 
 def post_docstrings(pyi_file):
