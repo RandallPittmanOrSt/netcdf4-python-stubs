@@ -144,7 +144,7 @@ def post_docstrings(pyi_file):
     """
     subprocess.run(shlex.split(f'ruff format "{pyi_file}"'), check=True)
     subprocess.run(
-        shlex.split(f'ruff check --select ALL --fix-only --fixable PIE790,D209,D212 -s"{pyi_file}"'),
+        shlex.split(f'ruff check --select ALL --fix-only --fixable PIE790,D209,D212 -s "{pyi_file}"'),
         check=True,
     )
 
@@ -152,9 +152,9 @@ def post_docstrings(pyi_file):
 if __name__ == "__main__":
     import shutil
     from pathlib import Path
-    pyi_file = Path(__file__).parent.parent / "netCDF4-stubs/_netCDF4.pyi"
+    pyi_file = Path(__file__).resolve().parent.parent / "netCDF4-stubs/_netCDF4.pyi"
     if "test" in sys.argv:
-        outfile = Path(__file__).parent.parent / "test_netCDF4.pyi"
+        outfile = Path(__file__).resolve().parent.parent / "test_netCDF4.pyi"
         shutil.copyfile(pyi_file, outfile)
         pyi_file = outfile
     prep_for_docstrings(pyi_file)
