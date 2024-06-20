@@ -1,13 +1,18 @@
+import json
 import re
 import shlex
+import shutil
 import subprocess
 import sys
+from pathlib import Path
 from types import ModuleType
 from typing import Dict, TypeVar, Union
 
 import libcst as cst
 import netCDF4
 from libcst.metadata import MetadataWrapper, PositionProvider
+
+PROJROOT = Path(__file__).resolve().parent.parent
 
 
 def _is_from_module(obj, modname):
@@ -147,15 +152,45 @@ def post_docstrings(pyi_file):
     )
 
 
-if __name__ == "__main__":
-    import shutil
-    from pathlib import Path
-    pyi_file = Path(__file__).resolve().parent.parent / "netCDF4-stubs/_netCDF4.pyi"
-    if "test" in sys.argv:
-        outfile = Path(__file__).resolve().parent.parent / "test_netCDF4.pyi"
+def get_netCDF4_version_from_pyproject() -> str:
+    section = ""
+    with open(PROJROOT / "pyproject.toml") as fobj:
+        for line in fobj:
+            if match := re.match(r"^\[+(.+)\]+$", line):
+                section = match[1]
+            if section == "tool.poetry.dependencies" and (match := re.match(r'^netCDF4 = "([^"]+)"', line)):
+                return match[1]
+    raise RuntimeError("Couldn't get netCDF4 version from pyproject.toml")
+
+
+def get_and_save_doctrings():
+    pyx_docstrings = get_docstrings(netCDF4._netCDF4)
+    docstrings_path = Path(__file__).parent / "docstrings" / f"netCDF4._netCDF4.{netCDF4.__version__}_docstrings.json"  # type: ignore
+    with open(docstrings_path, "w") as fobj:
+        json.dump(pyx_docstrings, fobj, indent="  ")
+
+
+def load_docstrings(netCDF4_version):
+    docstrings_path = Path(__file__).parent / "docstrings" / f"netCDF4._netCDF4.{netCDF4_version}_docstrings.json"
+    with open(docstrings_path, "r") as fobj:
+        return json.load(fobj)
+
+
+def merge_docstrings(test=True):
+    netCDF4_version = get_netCDF4_version_from_pyproject()
+    pyx_docstrings = load_docstrings(netCDF4_version)
+    pyi_file = PROJROOT / "netCDF4-stubs/_netCDF4.pyi"
+    if test:
+        outfile = PROJROOT / "test_netCDF4.pyi"
         shutil.copyfile(pyi_file, outfile)
         pyi_file = outfile
     prep_for_docstrings(pyi_file)
-    pyx_docstrings = get_docstrings(netCDF4._netCDF4)
     add_docstrings(pyx_docstrings, "netCDF4._netCDF4", pyi_file)
     post_docstrings(pyi_file)
+
+
+if __name__ == "__main__":
+    if sys.argv[1] == "merge":
+        merge_docstrings("test" in sys.argv)
+    elif sys.argv[1] == "save":
+        get_and_save_doctrings()
