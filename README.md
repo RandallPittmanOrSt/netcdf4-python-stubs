@@ -20,3 +20,6 @@ and `numpy.typing.NDArray[<numpy type>]` where possible.
 I have endeavored to follow the guidance at
 <https://typing.readthedocs.io/en/latest/spec/distributing.html> and
 <https://typing.readthedocs.io/en/latest/source/stubs.html> as closely as possible.
+
+I tried to figure out how to make `Variable` a `Generic`, but eventually determined this
+to be beyond my ability.
