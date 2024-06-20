@@ -187,7 +187,9 @@ class Dataset:
     def set_fill_off(self) -> None: ...
     def createDimension(self, dimname: str, size: int | None = None) -> Dimension: ...
     def renameDimension(self, oldname: str, newname: str) -> None: ...
-    def createCompoundType(self, datatype: np.dtype | list[tuple[str, npt.DTypeLike]], datatype_name: str) -> CompoundType: ...
+    def createCompoundType(
+        self, datatype: npt.DTypeLike | list[tuple[str, npt.DTypeLike]], datatype_name: str
+    ) -> CompoundType: ...
     def createVLType(self, datatype: npt.DTypeLike, datatype_name: str) -> VLType: ...
     def createEnumType(
         self, datatype: np.dtype[np.integer] | Type[np.integer], datatype_name: str, enum_dict: dict[str, int]
@@ -195,7 +197,7 @@ class Dataset:
     def createVariable(
         self,
         varname: str,
-        datatype: Datatype | npt.DTypeLike | str | CompoundType | VLType,
+        datatype: Datatype | npt.DTypeLike,  # str, CompoundType, and VLType are all DTypeLike
         dimensions: tuple[str, ...] | tuple[Dimension, ...] | str | Dimension = (),
         compression: Compression | None = None,
         zlib: bool = False,
@@ -286,7 +288,7 @@ class Variable:
         self,
         grp: Group,
         name: str,
-        datatype: Datatype | npt.DTypeLike | str | CompoundType | VLType,
+        datatype: Datatype | npt.DTypeLike,  # str, CompoundType, and VLType are all DTypeLike
         dimensions: tuple[str, ...] | tuple[Dimension, ...] | str | Dimension = (),
         compression: Compression | None = None,
         zlib: bool = False,
@@ -359,7 +361,9 @@ class CompoundType:
     def name(self) -> str: ...
     @property
     def dtype_view(self) -> np.dtype: ...
-    def __init__(self, grp: Group | Dataset, datatype: np.dtype | list[tuple[str, npt.DTypeLike]], dtype_name: str, **kwargs): ...
+    def __init__(
+        self, grp: Group | Dataset, datatype: npt.DTypeLike | list[tuple[str, npt.DTypeLike]], dtype_name: str, **kwargs
+    ): ...
 
 class VLType:
     @property
