@@ -14,7 +14,7 @@ if sys.version_info >= (3, 10):
 
     ellipsis = EllipsisType
 elif not TYPE_CHECKING:
-    class ellipsis: ...  # keeps ruff happy until ruff uses typeshed
+    ellipsis = type(Ellipsis)  # keeps ruff happy until ruff uses typeshed
 
 # fmt: off
 Datatype: TypeAlias = Literal[
