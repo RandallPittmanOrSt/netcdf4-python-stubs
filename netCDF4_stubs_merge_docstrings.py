@@ -1,10 +1,14 @@
 """netCDF4_stubs_merge_docstrings.py
 
-This script is provided as part of the netCDF4-stubs package to add docstrings from the currently-installed netCDF4 package to the
-type stubs so that they are available statically at runtime. This script requires libcst 1.1.0 or later to run.
+This script is provided as part of the netCDF4-stubs package to add docstrings from the
+currently-installed netCDF4 package to the type stubs so that they are available
+statically at runtime. This script requires libcst 1.1.0 or later to run.
 
-If this script is run with argument "test", a file test_netCDF4.pyi will be output in the current directory rather than modifying
-the type stubs file.
+If this script is run with argument "--no-replace", any existing docstrings already in
+the stubs file will not be replaced.
+
+If this script is run with argument "--test", a file test_netCDF4.pyi will be output in
+the current directory rather than modifying the type stubs file.
 """
 
 import json
@@ -70,15 +74,25 @@ def get_module_docstrings(module: ModuleType) -> Dict[str, str]:
 class AddDocstrings(cst.CSTTransformer):
     METADATA_DEPENDENCIES = (PositionProvider,)
 
-    def __init__(self, module_name: str, docstrings: Dict[str, str]):
+    def __init__(self, module_name: str, docstrings: Dict[str, str], replace_existing=True):
         """Set up the transformer
 
-        `module_name` must match the the __name__ of the module passed to get_docstrings
+        Parameters
+        ----------
+        module_name
+            The __name__ of the module passed to `get_docstrings()`.
+        docstrings
+            Mapping of module/class/function to docstrings. The keys are like:
+            '<module_name>.<class_name>.<method_name>'
+        replace_existing
+            If True, replace any existing docstrings in the module (when there are newer
+            ones).
         """
         # stack for storing the canonical name of the current function
         self.stack: list[str] = [module_name]
         self._module_name = module_name
         self._docstrings = docstrings
+        self.replace_existing = replace_existing
 
     @property
     def dotted_stack(self) -> str:
@@ -111,19 +125,33 @@ class AddDocstrings(cst.CSTTransformer):
         indented_body = textwrap.indent(textwrap.dedent("\n".join(lines[1:])), self.body_indent)
         return "\n".join([lines[0], indented_body])
 
+    @staticmethod
+    def is_ellipsis_node(node: cst.CSTNode) -> bool:
+        return isinstance(node, cst.Expr) and isinstance(node.value, cst.Ellipsis)
+
+    @staticmethod
+    def is_docstring_node(node: cst.CSTNode) -> bool:
+        return (
+            isinstance(node, cst.SimpleStatementLine)
+            and isinstance(expr := node.body[0], cst.Expr)
+            and isinstance(sstr := expr.value, cst.SimpleString)
+            and sstr.quote == '"""'
+        )
+
     def _add_docstring_to_modclsfun(
         self,
         node: Union[cst.Module, cst.ClassDef, cst.FunctionDef],
-        override_existing=False,
     ) -> Union[cst.Module, cst.ClassDef, cst.FunctionDef]:
-        """Add a docstring (if there is one) to a class or function node.
+        """Add a docstring (if there is one) to a module, class, or function node.
 
-        If there is an Ellipse for the class/function body it will be removed
+        If there is an Ellipse for the class/function body it will be removed. If
+        self.update_docstrings is True and there is an existing docstring, it
+        will be replaced.
 
         Parameters
         ----------
         node
-            libcst ClassDef or FunctionDef node
+            libcst ClassDef or FunctionDef node.
         override_existing
             If there is already a docstring present and override_existing it False
             (default), do not replace it.
@@ -131,16 +159,18 @@ class AddDocstrings(cst.CSTTransformer):
         Returns
         -------
         node
-            The updated node
+            The updated node.
         """
-        if (self.has_docstring(node) and not override_existing) or not (docstring := self._docstrings.get(self.dotted_stack, "")):
+        if (self.has_docstring(node) and not self.replace_existing) or not (
+            docstring := self._docstrings.get(self.dotted_stack, "")
+        ):
             return node
         docstring = self._indent_docstring(docstring)
         docstring_node = cst.SimpleStatementLine(body=[cst.Expr(cst.SimpleString(f'"""{docstring}"""'))])
-        # If the first thing in it's an ellipsis, replace it in the series of statements.
-        # Otherwise, prepend to the statements.
+        # If the first statement is an ellipsis or a docstring, replace it in the series of
+        # statements. Otherwise, prepend to the statements.
         statements = node.body if isinstance(node, cst.Module) else node.body.body
-        if isinstance(expr := statements[0], cst.Expr) and isinstance(expr.value, cst.Ellipsis):
+        if self.is_ellipsis_node(statements[0]) or (self.is_docstring_node(statements[0]) and self.replace_existing):
             new_statement_body = [docstring_node, *statements[1:]]
         else:
             new_statement_body = [docstring_node, *statements]
@@ -148,8 +178,8 @@ class AddDocstrings(cst.CSTTransformer):
         # the module with the new statements and return that.
         if isinstance(node, cst.Module):
             return node.with_changes(body=new_statement_body)
-        # If the class/function body is on the same line as the parameters, replace it
-        # with an IndentedBlock
+        # If the class/function body is on the same line as the parameters
+        # (SimpleStatementSuite), replace it with an IndentedBlock.
         if isinstance(node.body, cst.SimpleStatementSuite):
             statements_wrapper = cst.IndentedBlock(body=new_statement_body)
         else:
@@ -168,11 +198,11 @@ class AddDocstrings(cst.CSTTransformer):
         return False
 
 
-def add_docstrings(docstrings: Dict[str, str], module_name: str, pyi_file):
+def add_docstrings(docstrings: Dict[str, str], module_name: str, pyi_file, replace_existing=True):
     """Add docstrings to a type stub file"""
     tree = cst.parse_module(Path(pyi_file).read_text())
     wrapper = MetadataWrapper(tree)
-    transformer = AddDocstrings(module_name, docstrings)
+    transformer = AddDocstrings(module_name, docstrings, replace_existing)
     modified_tree = wrapper.visit(transformer)
     Path(pyi_file).write_text(modified_tree.code)
 
@@ -194,18 +224,18 @@ def load_docstrings(netCDF4_version: str) -> Dict[str, str]:
         return json.load(fobj)
 
 
-def merge_docstrings(test=True):
+def merge_docstrings(test=True, replace_existing=True):
     pyx_docstrings = get_module_docstrings(netCDF4._netCDF4)
     pyi_file = STUBS_DIR / "_netCDF4.pyi"
     if test:
         outfile = "test_netCDF4.pyi"
         shutil.copyfile(pyi_file, outfile)
         pyi_file = outfile
-    add_docstrings(pyx_docstrings, "netCDF4._netCDF4", pyi_file)
+    add_docstrings(pyx_docstrings, "netCDF4._netCDF4", pyi_file, replace_existing)
 
 
 def cli():
-    merge_docstrings("test" in sys.argv)
+    merge_docstrings("--test" in sys.argv, "--no-replace" not in sys.argv)
 
 
 if __name__ == "__main__":
