@@ -468,11 +468,6 @@ def stringtochar(
 @overload
 def stringtochar(
     a: npt.NDArray[np.character],
-    encoding: LiteralString = "utf-8",  # anything that's not 'none', 'None', or 'bytes'
-) -> npt.NDArray[np.str_]: ...
-@overload
-def stringtochar(
-    a: npt.NDArray[np.character],
     encoding: str = ...,
 ) -> npt.NDArray[np.str_ | np.bytes_]: ...
 @overload
@@ -480,11 +475,6 @@ def chartostring(
     b: npt.NDArray[np.character],
     encoding: Literal["none", "None", "bytes"] = ...,
 ) -> npt.NDArray[np.bytes_]: ...
-@overload
-def chartostring(
-    b: npt.NDArray[np.character],
-    encoding: LiteralString = "utf-8",  # anything that's not 'none', 'None', or 'bytes'
-) -> npt.NDArray[np.str_]: ...
 @overload
 def chartostring(
     b: npt.NDArray[np.character],
