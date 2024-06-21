@@ -21,5 +21,6 @@ I have endeavored to follow the guidance at
 <https://typing.readthedocs.io/en/latest/spec/distributing.html> and
 <https://typing.readthedocs.io/en/latest/source/stubs.html> as closely as possible.
 
-I tried to figure out how to make `Variable` a `Generic`, but eventually determined this
-to be beyond my ability.
+When the package is installed, a script `netCDF4_stubs_merge_docstrings` is made
+available installed that users can use to add docstrings from the netCDF4 runtime to
+their stubs file, if so desired (for pop-up help in IDEs).
