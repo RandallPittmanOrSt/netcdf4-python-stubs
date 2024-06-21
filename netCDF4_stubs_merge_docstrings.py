@@ -1,3 +1,12 @@
+"""netCDF4_stubs_merge_docstrings.py
+
+This script is provided as part of the netCDF4-stubs package to add docstrings from the currently-installed netCDF4 package to the
+type stubs so that they are available statically at runtime. This script requires libcst 1.1.0 or later to run.
+
+If this script is run with argument "test", a file test_netCDF4.pyi will be output in the current directory rather than modifying
+the type stubs file.
+"""
+
 import json
 import shutil
 import sys
@@ -8,13 +17,17 @@ from typing import Dict, Union
 
 try:
     import libcst as cst
+    import libcst._version
     import netCDF4
     from libcst.metadata import MetadataWrapper, PositionProvider
 except ImportError:
     print("libcst and netCDF4 are required to run this script.", file=sys.stderr)
     sys.exit(1)
+if libcst._version.__version_tuple__ < (1, 1, 0):
+    print("libcst 1.1.0 or later is required", file=sys.stderr)
+    sys.exit(1)
 
-PROJROOT = Path(__file__).resolve().parent.parent
+STUBS_DIR = Path(__file__).resolve().parent / "netCDF4-stubs"
 
 
 def _is_from_module(obj, modname):
@@ -183,16 +196,17 @@ def load_docstrings(netCDF4_version: str) -> Dict[str, str]:
 
 def merge_docstrings(test=True):
     pyx_docstrings = get_module_docstrings(netCDF4._netCDF4)
-    pyi_file = PROJROOT / "netCDF4-stubs/_netCDF4.pyi"
+    pyi_file = STUBS_DIR / "_netCDF4.pyi"
     if test:
-        outfile = PROJROOT / "test_netCDF4.pyi"
+        outfile = "test_netCDF4.pyi"
         shutil.copyfile(pyi_file, outfile)
         pyi_file = outfile
     add_docstrings(pyx_docstrings, "netCDF4._netCDF4", pyi_file)
 
 
+def cli():
+    merge_docstrings("test" in sys.argv)
+
+
 if __name__ == "__main__":
-    if sys.argv[1] == "merge":
-        merge_docstrings("test" in sys.argv)
-    elif sys.argv[1] == "save":
-        get_and_save_doctrings()
+    cli()

@@ -9,6 +9,7 @@ packages = [
     { include = "netCDF4-stubs" },
     { include = "netCDF4-stubs/*.pyi"},
 ]
+include = ["netCDF4_stubs_merge_docstrings.py"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
@@ -22,6 +23,9 @@ ipython = "^8.12.3"
 libcst = "^1.1.0"
 ruff = "^0.4.9"
 netcdf4 = "^1.7.0"
+
+[tool.poetry.scripts]
+netCDF4_stubs_merge_docstrings = "netCDF4_stubs_merge_docstrings:cli"
 
 [build-system]
 requires = ["poetry-core"]
