@@ -29,6 +29,8 @@ Datatype: TypeAlias = Literal[
     "u8",            # NC_UINT64
     "f4", "f",       # NC_FLOAT
     "f8", "d",       # NC_DOUBLE
+    "c8",
+    "c16"
 ]
 """Valid datatype specifiers"""
 # fmt: on
@@ -117,21 +119,21 @@ __has_nc_create_mem__: int
 __has_cdf5_format__: int
 __has_parallel4_support__: int
 __has_pnetcdf_support__: int
-# __has_parallel_support__: bool
+__has_parallel_support__: bool
 __has_quantization_support__: int
 __has_zstandard_support__: int
 __has_bzip2_support__: int
 __has_blosc_support__: int
 __has_szip_support__: int
 __has_set_alignment__: int
-# __has_ncfilter__: bool
+__has_ncfilter__: bool
 is_native_little: bool
 is_native_big: bool
 default_encoding: str
 unicode_error: str
 
-# class NetCDF4MissingFeatureException(Exception):
-#     def __init__(self, feature: str, version: str): ...
+class NetCDF4MissingFeatureException(Exception):
+    def __init__(self, feature: str, version: str): ...
 
 class Dataset:
     @property
@@ -162,6 +164,8 @@ class Dataset:
     def _ncstring_attrs__(self) -> bool: ...
     @property
     def __orthogonal_indexing__(self) -> Literal[True]: ...
+    @property
+    def auto_complex(self) -> bool: ...
     def __init__(
         self,
         filename: str | os.PathLike,
@@ -176,7 +180,7 @@ class Dataset:
         parallel: bool = False,
         comm=None,
         info=None,
-        # auto_complex: bool = False,
+        auto_complex: bool = False,
         **kwargs,
     ): ...
     def filepath(self, encoding: str | None = None) -> str: ...
@@ -346,6 +350,8 @@ class Variable:
     def size(self) -> int: ...
     @property
     def __orthogonal_indexing__(self) -> Literal[True]: ...
+    @property
+    def auto_complex(self) -> bool: ...
     def __setitem__(self, elem: GetSetItemIdx, data: Any): ...
     def __len__(self) -> int: ...
     def __array__(self) -> npt.ArrayLike: ...
@@ -514,3 +520,4 @@ def num2date(
     only_use_python_datetimes: bool = False,
     has_year_zero: bool | None = None,
 ) -> datetime.datetime | DateTimeArr: ...
+def dtype_is_complex(dtype: str | np.dtype) -> bool: ...

@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "netcdf4-stubs"
-version = "0.2.0.a0"
+version = "1.7.0a0"
 description = "Stub files for the netCDF4 package"
 authors = ["Randall Pittman <pittmara@oregonstate.edu>"]
 license = "MIT"
@@ -12,15 +12,16 @@ packages = [
 
 [tool.poetry.dependencies]
 python = "^3.8"
-netCDF4 = "1.7.0"
-numpy = "^1.21.0"  # needed for numpy.typing
+numpy = ">=1.21.0"  # needed for numpy.typing
 typing_extensions = "^4.6.0"
+cftime = "^1.6.2"
 
 [tool.poetry.group.dev.dependencies]
 mypy = "^1.10.0"
 ipython = "^8.12.3"
 libcst = "^1.1.0"
 ruff = "^0.4.9"
+netcdf4 = "^1.7.0"
 
 [build-system]
 requires = ["poetry-core"]
